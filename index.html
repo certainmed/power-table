@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Table 1-20</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- MathJax for LaTeX Rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* --- Theme Definitions (CSS Variables) --- */
+        :root {
+            --bg-color: #ffffff;
+            --surface-color: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --accent-color: #3b82f6;
+            --border-color: #e5e7eb;
+            --header-bg: #e5e7eb;
+            --font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+            --cell-hover: #dbeafe;
+        }
+
+        /* Theme 1: Minimalist (Default) - Inherits root */
+
+        /* Theme 2: Midnight (Dark) */
+        [data-theme="midnight"] {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-color: #818cf8;
+            --border-color: #334155;
+            --header-bg: #1e293b;
+            --font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+            --cell-hover: #312e81;
+        }
+
+        /* Theme 3: Nature (Earthy) */
+        [data-theme="nature"] {
+            --bg-color: #fefce8; /* Cream */
+            --surface-color: #ecfccb; /* Light Green */
+            --text-primary: #365314; /* Dark Green */
+            --text-secondary: #4d7c0f;
+            --accent-color: #65a30d;
+            --border-color: #d9f99d;
+            --header-bg: #d9f99d;
+            --font-family: 'Georgia', 'Times New Roman', Times, serif;
+            --cell-hover: #bef264;
+        }
+
+        /* Theme 4: Cyberpunk (Terminal) */
+        [data-theme="cyber"] {
+            --bg-color: #000000;
+            --surface-color: #111111;
+            --text-primary: #00ff41; /* Hacker Green */
+            --text-secondary: #008f11;
+            --accent-color: #00ff41;
+            --border-color: #003b00;
+            --header-bg: #001a00;
+            --font-family: 'Courier New', Courier, monospace;
+            --cell-hover: #003b00;
+        }
+
+        /* --- Element Styles using Variables --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            transition: all 0.3s ease;
+        }
+
+        .surface {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Custom Scrollbar Styling */
+        .table-container::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        /* Table Styling */
+        table {
+            border-collapse: separate; 
+            border-spacing: 0;
+        }
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            white-space: nowrap;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Sticky Headers Logic */
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: var(--header-bg);
+            color: var(--text-primary);
+            z-index: 20;
+            font-weight: bold;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        /* Top-Left Corner Double Sticky */
+        thead th:first-child {
+            left: 0;
+            z-index: 30;
+            border-right: 2px solid var(--accent-color);
+        }
+
+        /* First Column (Base) Sticky Left */
+        tbody th {
+            position: sticky;
+            left: 0;
+            background-color: var(--header-bg);
+            color: var(--text-primary);
+            z-index: 10;
+            border-right: 2px solid var(--accent-color);
+        }
+
+        /* Hover effects */
+        tbody tr:hover td {
+            background-color: var(--cell-hover);
+            color: var(--text-primary);
+        }
+        
+        /* Theme Button Active State */
+        .theme-btn.active {
+            ring-width: 2px;
+            ring-offset-width: 2px;
+            ring-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        /* MathJax Font Adjustment */
+        mjx-container {
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-8" data-theme="minimalist">
+
+    <!-- Header Controls -->
+    <header class="max-w-7xl mx-auto w-full mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight" style="color: var(--text-primary)">
+                Power Table <span style="color: var(--accent-color)">1-20</span>
+            </h1>
+            <p class="mt-1 text-sm opacity-80" style="color: var(--text-secondary)">
+                Dynamic exponentiation table \( x^n \)
+            </p>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="flex flex-wrap gap-2 surface p-2 rounded-lg shadow-sm">
+            <button onclick="setTheme('minimalist')" class="theme-btn active px-4 py-2 rounded text-sm font-medium transition-all bg-white text-gray-800 border border-gray-200 hover:bg-gray-50">
+                Minimalist
+            </button>
+            <button onclick="setTheme('midnight')" class="theme-btn px-4 py-2 rounded text-sm font-medium transition-all bg-slate-800 text-white border border-slate-700 hover:bg-slate-700">
+                Midnight
+            </button>
+            <button onclick="setTheme('nature')" class="theme-btn px-4 py-2 rounded text-sm font-medium transition-all bg-[#ecfccb] text-[#365314] border border-[#d9f99d] hover:brightness-95">
+                Nature
+            </button>
+            <button onclick="setTheme('cyber')" class="theme-btn px-4 py-2 rounded text-sm font-medium transition-all bg-black text-[#00ff41] border border-[#00ff41] hover:bg-[#001a00]">
+                Cyber
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Table Container -->
+    <main class="flex-grow w-full max-w-7xl mx-auto overflow-hidden surface rounded-xl shadow-lg flex flex-col h-[75vh]">
+        <div class="table-container overflow-auto w-full h-full relative">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr id="headerRow">
+                        <th class="text-center bg-opacity-100 min-w-[80px]">
+                           \( x \setminus n \)
+                        </th>
+                        <!-- Header Columns will be injected here -->
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data Rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Footer / Legend -->
+        <div class="p-3 border-t text-xs flex justify-between items-center opacity-70" style="border-color: var(--border-color); color: var(--text-secondary)">
+            <span>Rows: Base Number (x)</span>
+            <span>Columns: Exponent (n)</span>
+        </div>
+    </main>
+
+    <script>
+        // --- Table Generation Logic ---
+        
+        const MAX_BASE = 20;
+        const MAX_POWER = 20;
+
+        function initTable() {
+            const headerRow = document.getElementById('headerRow');
+            const tableBody = document.getElementById('tableBody');
+
+            // 1. Create Headers (Exponent)
+            for (let n = 1; n <= MAX_POWER; n++) {
+                const th = document.createElement('th');
+                // Use LaTeX format for the header
+                th.innerHTML = `\\( x^{${n}} \\)`; 
+                th.title = `Power of ${n}`;
+                headerRow.appendChild(th);
+            }
+
+            // 2. Create Rows (Base)
+            for (let x = 1; x <= MAX_BASE; x++) {
+                const tr = document.createElement('tr');
+                
+                // First column in the row (Sticky Base Number)
+                const thHeader = document.createElement('th');
+                thHeader.textContent = x;
+                thHeader.title = `Base ${x}`;
+                thHeader.style.textAlign = 'center';
+                thHeader.style.fontWeight = 'bold';
+                tr.appendChild(thHeader);
+
+                // Data Cells
+                for (let n = 1; n <= MAX_POWER; n++) {
+                    const td = document.createElement('td');
+                    
+                    // Use BigInt for large number precision (20^20)
+                    const val = BigInt(x) ** BigInt(n);
+                    
+                    // Format number with English locale (commas for thousands)
+                    td.textContent = val.toLocaleString('en-US');
+                    
+                    // Add tooltip for hover
+                    td.title = `${x}^${n} = ${val.toLocaleString('en-US')}`;
+                    
+                    tr.appendChild(td);
+                }
+                tableBody.appendChild(tr);
+            }
+
+            // 3. Trigger MathJax to render the new LaTeX elements
+            if (window.MathJax) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        // --- Theme Switching Logic ---
+
+        function setTheme(themeName) {
+            // Set data-theme attribute on body
+            document.body.setAttribute('data-theme', themeName);
+
+            // Update active button state
+            const buttons = document.querySelectorAll('.theme-btn');
+            buttons.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(themeName)) {
+                    btn.classList.add('active', 'ring-2', 'ring-offset-2');
+                } else {
+                    btn.classList.remove('active', 'ring-2', 'ring-offset-2');
+                }
+            });
+        }
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initTable();
+        });
+
+    </script>
+</body>
+</html>
